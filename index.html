@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>电商网站示例</title>
+
+</head>
+<body>
+<h1>商品列表</h1>
+<div id="product-list"></div>
+<h1>购物车</h1>
+<div id="cart"></div>
+<script>
+    // 商品列表
+    const products = [
+        {id: 1, name: '商品1', price: 10},
+        {id: 2, name: '商品2', price: 20},
+        {id: 3, name: '商品3', price: 30},
+        {id: 4, name: '商品4', price: 40},
+        {id: 5, name: '商品5', price: 50},
+    ];
+
+    // 购物车
+    const cart = [];
+
+    // 显示商品列表
+    function showProducts() {
+        const productList = document.getElementById('product-list');
+        productList.innerHTML = '';
+        for (let i = 0; i < products.length; i++) {
+            const product = products[i];
+            const productDiv = document.createElement('div');
+            productDiv.innerHTML = `
+          <span>${product.name} - ￥${product.price}</span>
+          <button onclick="addToCart(${product.id})">添加到购物车</button>
+        `;
+            productList.appendChild(productDiv);
+        }
+    }
+
+    // 显示购物车
+    function showCart() {
+        const cartDiv = document.getElementById('cart');
+        cartDiv.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>商品名称</th>
+              <th>数量</th>
+              <th>价格</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2">总价：</td>
+              <td id="total-price">￥0</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+      `;
+        const cartTable = cartDiv.querySelector('table');
+        const cartTableBody = cartTable.querySelector('tbody');
+        let totalPrice = 0;
+        for (let i = 0; i < cart.length; i++) {
+            const cartItem = cart[i];
+            const product = products.find(p => p.id === cartItem.id);
+            const cartItemRow = document.createElement('tr');
+            cartItemRow.innerHTML = `
+          <td>${product.name}</td>
+          <td>${cartItem.quantity}</td>
+          <td>￥${product.price * cartItem.quantity}</td>
+          <td><button onclick="removeFromCart(${cartItem.id
+            })">移出购物车</button></td>
+    `;
+            cartTableBody.appendChild(cartItemRow);
+            totalPrice += product.price * cartItem.quantity;
+        }
+        const totalPriceCell = cartTable.querySelector('#total-price');
+        totalPriceCell.textContent = `￥${totalPrice}`;
+    }
+
+    // 添加到购物车
+    function addToCart(productId) {
+        const cartItem = cart.find(item => item.id === productId);
+        if (cartItem) {
+            cartItem.quantity++;
+        } else {
+            cart.push({id: productId, quantity: 1});
+        }
+        showCart();
+    }
+
+    // 从购物车中移除商品
+    function removeFromCart(productId) {
+        const cartItemIndex = cart.findIndex(item => item.id === productId);
+        if (cartItemIndex >= 0) {
+            const cartItem = cart[cartItemIndex];
+            if (cartItem.quantity > 1) {
+                cartItem.quantity--;
+            } else {
+                cart.splice(cartItemIndex, 1);
+            }
+            showCart();
+        }
+    }
+
+    // 显示商品列表和购物车
+    showProducts();
+    showCart();
+</script>
+</body>
+</html>
